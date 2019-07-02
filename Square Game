@@ -1,3 +1,7 @@
+#Author: Jared Greiner
+#Date: 6-29-19
+#Purpose: Simple block game where the player must dodge falling blocks. As the player's score increases so does the speed of the blocks.
+
 import pygame
 import sys
 import random

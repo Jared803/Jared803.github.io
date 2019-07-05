@@ -1,8 +1,15 @@
-# My-first-PyGame
-Created a game with Sublime Text and Python where you dodge falling blocks to increase your score. The blocks fall faster as your score increases. Use the directional arrows on the keyboard to move your block up down left and right to dodge the falling blocks.
+Simple block game where blocks fall from the sky and the player must avoid them. As you dodge the blocks your score increases and as the score increases so does the difficulty. Use the arrow keys to move left, right, up and down.
 
-Need to create a function for multiple collision detections. 
-Need to create a boundary so the player cannot go outside of the screen.
+Improvements to be made: 
+I want to add a feature that allows the player to move to the far left and appear at the far right and vice versa like in Pacman. 
+Add in a multi collision function.
+Add a boundry wall where the lanes end.
 
-What I learned:
-I learned how to: use PyGame, make collision detection functions for two objects, create a window screen, create a loop to keep the window open until the game is over, spawn multiple enemies with a loop, update the position of the blocks to create movement, increase difficulty with if and else statements, why using a constant is better than magic numbers, change screen, player and enemy colors with RGB wheel, add text to the screen to display a score board for the player, end the game when the player collides with another block.
+From this project I learned how to:
+
+Create a game window with vertical grid lines to simulate lanes for the player.
+Create falling blocks for the player to dodge. As each block disappears off the screen they reappear at the top of the screen.
+Randomly drop each block from a specific spawn point by filling a list and having the computer randomly select from that list. 
+Allow the Player to control their block and move it up, down, left and right.
+Increase difficulty as the player’s score increases.
+Created my own collision detection function instead of using PyGame’s built in function.

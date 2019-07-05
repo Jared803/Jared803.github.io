@@ -7,9 +7,9 @@ Add a boundry wall where the lanes end.
 
 From this project I learned how to:
 
-Create a game window with vertical grid lines to simulate lanes for the player.
-Create falling blocks for the player to dodge. As each block disappears off the screen they reappear at the top of the screen.
-Randomly drop each block from a specific spawn point by filling a list and having the computer randomly select from that list. 
-Allow the Player to control their block and move it up, down, left and right.
-Increase difficulty as the player’s score increases.
-Created my own collision detection function instead of using PyGame’s built in function.
+Create a game window with vertical grid lines to simulate lanes for the player. 
+Create falling blocks for the player to dodge. As each block disappears off the screen they reappear at the top of the screen. 
+Randomly drop each block from a specific spawn point by filling a list and having the computer randomly select from that list.  
+Allow the Player to control their block and move it up, down, left and right. 
+Increase difficulty as the player’s score increases. 
+Created my own collision detection function instead of using PyGame’s built in function.

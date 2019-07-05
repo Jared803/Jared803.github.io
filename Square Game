@@ -1,133 +1,154 @@
 #Author: Jared Greiner
-#Date: 6-29-19
-#Purpose: Simple block game where the player must dodge falling blocks. As the player's score increases so does the speed of the blocks.
+#Date:   7/3/2019
+#Purpose: Simple game where the player must dodge blocks falling from the sky. The move blocks the player dodges teh higher their score. As the score increases so does the difficulty.
+#Improvements: Need to create collision detection for multiple blocks. function that sends the player to the other side of the field if they go too far right or left(like Pacman). function to create a ceiling and floor.
 
 import pygame
 import sys
 import random
+import math
 
 pygame.init()
 
-WIDTH = 800
-HEIGHT = 900
-PLAYER_COLOR = (255,0,0)
-ENEMY_COLOR = (0,0,255)
-SCORE_COLOR = (0,0,0)
-BACKGROUND_COLOR = (0,255,255)
-SPEED = 10
+WIDTH = 600
+HEIGHT = 700
+SCORE_CLR = (0,0,0)
 
-
-player_size = 35
-player_position = [WIDTH/2 ,500]
+player_pos = [WIDTH/2, HEIGHT/1.2]
+enemy_pos = [WIDTH/2,0]
+block_list = [enemy_pos]
+block_size = 30
+move_dist = 30
 
 score = 0
-
-enemy_size = 40
-enemy_position = [random.randint(0,WIDTH - enemy_size),0]
-enemy_list = [enemy_position]
-
-
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-
+fall_spd = 10
 game_over = False
 
 clock = pygame.time.Clock()
+score_font = pygame.font.SysFont("monospace", 35)
+screen = pygame.display.set_mode((WIDTH,HEIGHT))
 
-my_font = pygame.font.SysFont("monospace", 35)
 
-def difficulty(score, SPEED):
-	if score < 50:
-		SPEED = 10
-	elif score < 150:
-		SPEED = score / 5
-	else:
-		SPEED = 150 / 5
-	return SPEED
+def create_blocks(player_pos,block_list,screen,block_size):
 
-def drop_enemies(enemy_list):
 	delay = random.random()
-	if len(enemy_list) < 10 and delay < 0.2:
-		x_position = random.randint(0, WIDTH - enemy_size)
-		y_position = 0
-		enemy_position = [x_position,y_position]
-		enemy_list.append(enemy_position)
+	player_clr = (255,0,0)
+	enemy_clr = (0,0,255)
+	
+	pygame.draw.rect(screen,(player_clr),(player_pos[0], player_pos[1], block_size, block_size))
+	
+	spawn_points = list(range(30,601,30))
+	
 
-def spawn_enemies(enemy_list):
-	for enemy_position in enemy_list:
-		pygame.draw.rect(screen,(ENEMY_COLOR),(enemy_position[0],enemy_position[1],enemy_size,enemy_size))
+	if len(block_list) <= 15 and delay < 0.3:
+		x_pos = random.choice(spawn_points)
+		y_pos = 1
+		enemy_pos = [x_pos,y_pos]
+		block_list.append(enemy_pos)
 
-def update_enemy_position(enemy_list,score):
-	for index, enemy_position in enumerate(enemy_list):
-		if enemy_position[1] >= 0 and enemy_position[1] < HEIGHT:
-			enemy_position[1] += SPEED
+	for enemy_pos in block_list:
+		pygame.draw.rect(screen,(enemy_clr),(enemy_pos[0],enemy_pos[1],block_size,block_size))
+		
+		
+def falling_blocks(block_list,score,fall_spd):
+
+	for i, enemy_pos in enumerate(block_list):
+
+		if enemy_pos[1] >= 0 and enemy_pos[1] < HEIGHT:
+			enemy_pos[1] += fall_spd
+
 		else:
-			enemy_list.pop(index)
+			block_list.pop(i)
 			score += 1
+		
 	return score
 
-def collision_check(enemy_list,player_position):
-	for enemy_position in enemy_list:
-		if detect_colision(player_position, enemy_position):
-			return True
+
+def draw_lines(WIDTH,HEIGHT,screen):
+
+	rows = 20
+	size_betwn = WIDTH // rows
+	x = 0
+	y = 0
+
+	create_blocks(player_pos,block_list,screen,block_size)
+
+	pygame.draw.line(screen, (0,0,0), (0,612), (WIDTH,612))
+	pygame.draw.line(screen, (0,0,0), (0,0), (WIDTH,x))
+
+	for line in range(rows):
+		x = x + size_betwn
+		y = y + size_betwn
+
+		pygame.draw.line(screen, (0,0,0), (y,0), (y,612))
+
+def game_window():
+	
+	screen.fill((0,255,255))
+	draw_lines(WIDTH,HEIGHT,screen)
+	text = "Score: " + str(score)
+	label = score_font.render(text,1, (0,0,0))
+	screen.blit(label, (WIDTH - 250, HEIGHT - 50))
+	pygame.display.update()
+	
+	
+def difficulty(score,fall_spd):
+	if score < 50:
+		fall_spd = 10
+	elif score < 150:
+		fall_spd = score / 5
+	else:
+		fall_spd = 150 / 5
+	return fall_spd
+
+def collision_check(block_list,player_pos,block_size):
+
+	for i, enemy_pos in enumerate(block_list):
+
+		p_x = player_pos[0]
+		p_y = player_pos[1]
+
+		e_x = enemy_pos[0]
+		e_y = enemy_pos[1]
+
+		if p_x >= e_x and p_x < (e_x + block_size) or e_x >= p_x and e_x < (p_x + block_size):
+			if p_y >= e_y and p_y < (e_y + block_size) or e_y >= p_y and e_y < (p_y + block_size):
+				return True
 		return False
 
-def detect_colision(player_position, enemy_position):
-	p_x = player_position[0]
-	p_y = player_position[1]
-
-	e_x = enemy_position[0]
-	e_y = enemy_position[1]
-
-	if (e_x + enemy_size) >= p_x and e_x < (p_x + player_size) or (p_x + player_size) >= e_x and p_x < (e_x + enemy_size):
-		if (e_y + enemy_size) >= p_y and e_y < (p_y + player_size) or (p_y + player_size) >= e_y and p_y < (e_y + enemy_size):
+'''def detect_multi_collision(block_list,player_pos,block_size):
+	for i, enemy_pos in enumerate(block_list):
+		if collision_check(block_list,player_pos,block_size):
 			return True
-	return False
-
-
+		return False'''
+	
 
 while not game_over:
 	for event in pygame.event.get():
 
 		if event.type == pygame.QUIT:
 			sys.exit()
-
 		if event.type == pygame.KEYDOWN:
-			x = player_position[0]
-			y = player_position[1]
+
+			x = player_pos[0]
+			y = player_pos[1]
 
 			if event.key == pygame.K_LEFT:
-				x -= player_size
+				x -= move_dist
 			elif event.key == pygame.K_RIGHT:
-			    x += player_size
+				x += move_dist
 			elif event.key == pygame.K_UP:
-				y -= player_size
+				y -= move_dist
 			elif event.key == pygame.K_DOWN:
-				y += player_size
+				y += move_dist
 
+			player_pos = [x,y]
 
-			player_position = [x,y]
+	game_window()
+	score = falling_blocks(block_list,score,fall_spd)
+	fall_spd = difficulty(score,fall_spd)
 
-
-	screen.fill((BACKGROUND_COLOR))
-
-
-	drop_enemies(enemy_list)
-	spawn_enemies(enemy_list)
-	score = update_enemy_position(enemy_list, score)
-	SPEED = difficulty(score, SPEED)
-
-	text = "Score: " + str(score)
-	label = my_font.render(text, 1, SCORE_COLOR)
-	screen.blit(label, (WIDTH - 300, HEIGHT - 40))
-
-	print (score)
-
-
-	if collision_check(enemy_list, player_position):
-		game_over =  True
-		break
-
-	pygame.draw.rect(screen,(PLAYER_COLOR),(player_position[0],player_position[1], player_size, player_size))
+	if collision_check(block_list,player_pos,block_size):
+		game_over = True
+			
 	clock.tick(30)
-
-	pygame.display.update()

@@ -2,7 +2,6 @@ Simple block game where blocks fall from the sky and the player must avoid them.
 
 Improvements to be made: 
 I want to add a feature that allows the player to move to the far left and appear at the far right and vice versa like in Pacman. 
-Add in a multi collision function.
 Add a boundry wall where the lanes end.
 
 From this project I learned how to:

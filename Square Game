@@ -1,12 +1,14 @@
 #Author: Jared Greiner
 #Date:   7/3/2019
-#Purpose: Simple game where the player must dodge blocks falling from the sky. The move blocks the player dodges teh higher their score. As the score increases so does the difficulty.
-#Improvements: Function that sends the player to the other side of the field if they go too far right or left(like Pacman). function to create a ceiling and floor.
+#Purpose: Simple game where the player must avoid falling blocks. As your score increases so does the speed of the blocks.
+
 
 import pygame
 import sys
 import random
 import math
+import tkinter as tk
+from tkinter import messagebox
 
 pygame.init()
 
@@ -14,14 +16,15 @@ WIDTH = 600
 HEIGHT = 700
 SCORE_CLR = (0,0,0)
 
-player_pos = [WIDTH/2, HEIGHT/1.2]
+strt_hght = HEIGHT/1.2
+player_pos = [WIDTH/2, strt_hght]
 enemy_pos = [WIDTH/2,0]
 block_list = [enemy_pos]
 block_size = 30
 move_dist = 30
+fall_spd = 10
 
 score = 0
-fall_spd = 10
 game_over = False
 
 clock = pygame.time.Clock()
@@ -37,7 +40,7 @@ def create_blocks(player_pos,block_list,screen,block_size):
 	
 	pygame.draw.rect(screen,(player_clr),(player_pos[0], player_pos[1], block_size, block_size))
 	
-	spawn_points = list(range(30,601,30))
+	spawn_points = list(range(0,601,30))
 	
 
 	if len(block_list) <= 15 and delay < 0.3:
@@ -50,13 +53,17 @@ def create_blocks(player_pos,block_list,screen,block_size):
 		pygame.draw.rect(screen,(enemy_clr),(enemy_pos[0],enemy_pos[1],block_size,block_size))
 		
 		
-def falling_blocks(block_list,score,fall_spd):
+def falling_blocks(block_list, score, strt_hght, fall_spd):
+
+
+	
 
 	for i, enemy_pos in enumerate(block_list):
 
-		if enemy_pos[1] >= 0 and enemy_pos[1] < HEIGHT:
+		if enemy_pos[1] >= 0 and enemy_pos[1] < strt_hght:
 			enemy_pos[1] += fall_spd
-		else:
+
+		elif enemy_pos[1] >= strt_hght:
 			block_list.pop(i)
 			score += 1
 		
@@ -91,17 +98,18 @@ def game_window():
 	pygame.display.update()
 	
 	
-def difficulty(score,fall_spd):
+def difficulty(score, fall_spd):
 	if score < 50:
 		fall_spd = 10
 	elif score < 150:
 		fall_spd = score / 5
 	else:
 		fall_spd = 150 / 5
+
 	return fall_spd
 
-def collision_check(block_list,player_pos,block_size):
 
+def collision_check(block_list, player_pos, block_size):
 
 	p_x = player_pos[0]
 	p_y = player_pos[1]
@@ -117,13 +125,22 @@ def collision_check(block_list,player_pos,block_size):
 				return True
 	 
 
-def collision_resolution(block_list,player_pos,block_size):
+def collision_resolution(block_list, player_pos, block_size):
 	for enemy_pos in enumerate(block_list):
 		if collision_check(block_list,player_pos,block_size):
 			return True
 	return False
+
 			
-		
+def message_box(subject, content):
+	root = tk.Tk()
+	root.attributes("-topmost", True)
+	root.withdraw()
+	messagebox.showinfo(subject, content)
+	try:
+		root.destory()
+	except:
+		pass	
 	
 
 while not game_over:
@@ -138,21 +155,33 @@ while not game_over:
 
 			if event.key == pygame.K_LEFT:
 				x -= move_dist
+				if x < 0:
+					x = 570
 			elif event.key == pygame.K_RIGHT:
 				x += move_dist
+				if x >= WIDTH:
+					x = 0
 			elif event.key == pygame.K_UP:
 				y -= move_dist
+				if y <= 0:
+					y = 0
 			elif event.key == pygame.K_DOWN:
 				y += move_dist
+				if y >= HEIGHT/1.2:
+					y = HEIGHT/1.2
 
 			player_pos = [x,y]
 
+
+
 	game_window()
-	score = falling_blocks(block_list, score, fall_spd)
+	score = falling_blocks(block_list, score, strt_hght, fall_spd)
 	fall_spd = difficulty(score, fall_spd)
 
-	if collision_resolution(block_list,player_pos,block_size):
 
+	if collision_resolution(block_list, player_pos, block_size):
+		final_score = "Your final score was: " + str(score)
+		message_box("You lost!", final_score)
 		game_over = True
 			
 	clock.tick(30)

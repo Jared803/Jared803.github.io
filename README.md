@@ -1,10 +1,9 @@
-Simple block game where blocks fall from the sky and the player must avoid them. As you dodge the blocks your score increases and as the score increases so does the difficulty. Use the arrow keys to move left, right, up and down.
+Simple block game where the player must avoid falling blocks to increase their score. As their score increases so does the speed at which the blocks fall. Use the up, down, left, right arrow keys to move.
 
-Improvements to be made: 
-I want to add a feature that allows the player to move to the far left and appear at the far right and vice versa like in Pacman. 
-Add a boundry wall where the lanes end.
+Improvements to be made: tbd
 
-From this project I learned how to:
+
+What i learned from this project:
 
 Create a game window with vertical grid lines to simulate lanes for the player.
 
@@ -17,3 +16,5 @@ Allow the Player to control their block and move it up, down, left and right.
 Increase difficulty as the player’s score increases.
 
 Created my own collision detection function instead of using PyGame’s built in function.
+
+How to create a ceiling, floor and teleporting sides like in Pac Man.
